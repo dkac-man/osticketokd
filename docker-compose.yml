@@ -1,0 +1,46 @@
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: osticket
+      MYSQL_USER: osticket
+      MYSQL_PASSWORD: osticket
+    volumes:
+      - db:/var/lib/mysql
+
+  osticket:
+    build: .
+    container_name: osticket
+    depends_on:
+      - mariadb
+    ports:
+      - "8080:8080"
+    user: "12345:0"
+    cap_drop:
+      - ALL
+    volumes:
+      - uploads:/var/www/html/upload
+      - ./entrypoint.sh:/entrypoint.sh:ro
+    command: [ "sh", "/entrypoint.sh" ]
+
+  cron:
+    build: .
+    container_name: osticket-cron
+    depends_on:
+      - osticket
+    user: "12345:0"
+    cap_drop:
+      - ALL
+    volumes:
+      - uploads:/var/www/html/upload
+      - ./entrypoint.sh:/entrypoint.sh:ro
+    command: >
+      sh -lc "while true; do php /var/www/html/api/cron.php; sleep 300; done"
+
+
+volumes:
+  db:
+  uploads:
