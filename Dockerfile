@@ -1,4 +1,4 @@
-FROM php:8.2-apache-bookworm
+FROM registry.paas.psnc.pl/base/php:8.2-apache-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl unzip libzip-dev \
