@@ -1,23 +1,4 @@
-FROM php:8.2-apache-bookworm
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl unzip libzip-dev \
-    libc-client2007e-dev libkrb5-dev \
-    libpng-dev libjpeg-dev libfreetype6-dev \
- && docker-php-ext-install mysqli zip \
- && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
- && docker-php-ext-install imap \
- && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install gd \
- && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /var/www/html
-
-RUN curl -L https://github.com/osTicket/osTicket/releases/download/v1.18.3/osTicket-v1.18.3.zip \
-    -o osticket.zip \
- && unzip osticket.zip \
- && mv upload/* . \
- && rm -rf upload osticket.zip
+FROM docker.io/osticket/osticket:latest
 
 RUN rm -f /var/www/html/index.html
 
